@@ -1,7 +1,5 @@
 # interactive-desktop
 
-Just a testing code.
-
 ## Project setup
 ```
 npm install
