@@ -1,9 +1,12 @@
 <template>
   <div id="app">
+    {{ set }}
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/section-1">About 1</router-link> |
-      <router-link to="/about-2">About 2</router-link>
+      <span v-for="(entry, index) in set" :key="index">
+        {{ entry }}
+        <router-link :to="'/section-' + index">About {{ index }}</router-link> |
+      </span>
     </div>
     <router-view />
   </div>
@@ -11,7 +14,13 @@
 
 <script lang="ts">
 import Vue from "vue";
-export default Vue.extend({});
+export default Vue.extend({
+  data() {
+    return {
+      set: ["1", "2", "3"]
+    };
+  }
+});
 </script>
 
 <style lang="scss">
