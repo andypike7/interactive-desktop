@@ -2,11 +2,17 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/section-1">About 1</router-link> |
+      <router-link to="/about-2">About 2</router-link>
     </div>
     <router-view />
   </div>
 </template>
+
+<script lang="ts">
+import Vue from "vue";
+export default Vue.extend({});
+</script>
 
 <style lang="scss">
 #app {
