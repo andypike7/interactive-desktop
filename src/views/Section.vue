@@ -1,6 +1,9 @@
 <template>
   <div class="about">
     <h1>This is about Section #{{ $route.params.id }}</h1>
+    <vue-draggable-resizable>
+      I'm a <b>vue-draggable-resizable</b> Block!
+    </vue-draggable-resizable>
     <div v-for="(block, index) in blocks" class="block" :key="index">
       <div @click="removeBlock(index)" class="remove-icon">
         X
@@ -22,6 +25,10 @@ import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { DEFAULT_NUMBER_OF_BLOCKS } from "@/config";
 import { Block } from "@/interfaces";
+import VueDraggableResizable from "vue-draggable-resizable";
+import "vue-draggable-resizable/dist/VueDraggableResizable.css";
+
+Vue.component("vue-draggable-resizable", VueDraggableResizable);
 
 @Component
 export default class Section extends Vue {
