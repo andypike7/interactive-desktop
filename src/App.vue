@@ -1,41 +1,33 @@
 <template>
   <div id="app">
-    {{ set }}
     <div id="nav">
       <router-link to="/">Home</router-link> |
-      <span v-for="(entry, index) in set" :key="index">
-        {{ entry }}
-        <router-link :to="'/section/' + index">Section {{ index }}</router-link>
+      <span v-for="section in sections" :key="section.name">
+        <router-link :to="`/section/${section.name}`"
+          >Section {{ section.name }}</router-link
+        >
         |
       </span>
     </div>
     <router-view />
-    <div class="debugging">
-      deletedEntries:
-      <span v-if="deletedEntries.length === 0">
-        No way back.
-      </span>
-      <div v-else>
-        {{ deletedEntries }}
-      </div>
-    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-export default Vue.extend({
-  data() {
-    return {
-      set: ["1", "2", "3"],
-      deletedEntries: []
-    };
-  }
-});
-</script>
+import { Component } from "vue-property-decorator";
+import { DEFAULT_NUMBER_OF_SECTIONS } from "@/config";
+import { Section } from "@/interfaces";
 
-<style lang="scss">
-.debugging {
-  color: #bbb;
+@Component
+export default class App extends Vue {
+  sections: Section[] = [];
+
+  mounted() {
+    for (let i = 0; i < DEFAULT_NUMBER_OF_SECTIONS; i++) {
+      this.sections.push({ name: "*" + i.toString() });
+      // this.addBlock();
+    }
+  }
 }
-</style>
+</script>

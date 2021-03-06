@@ -20,11 +20,8 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { DEFAULT_NUMBER_OF_BLOCKS } from "../config";
-
-interface Block {
-  name: string;
-}
+import { DEFAULT_NUMBER_OF_BLOCKS } from "@/config";
+import { Block } from "@/interfaces";
 
 @Component
 export default class Section extends Vue {

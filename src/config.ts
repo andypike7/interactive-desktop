@@ -1,1 +1,2 @@
+export const DEFAULT_NUMBER_OF_SECTIONS = 3;
 export const DEFAULT_NUMBER_OF_BLOCKS = 5;
