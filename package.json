@@ -1,5 +1,5 @@
 {
-  "name": "Interactive Desktop",
+  "name": "interactive-desktop",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
+    "vue-draggable-resizable": "^2.3.0",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
   },
@@ -32,6 +33,8 @@
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "typescript": "~3.9.3",
+    "vue-class-component": "^7.2.6",
+    "vue-property-decorator": "^9.1.2",
     "vue-template-compiler": "^2.6.11"
   },
   "eslintConfig": {
