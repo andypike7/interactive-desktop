@@ -3,9 +3,9 @@
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <span v-for="section in sections" :key="section.name">
-        <router-link :to="`/section/${section.name}`"
-          >Section {{ section.name }}</router-link
-        >
+        <router-link :to="`/section/${section.name}`">
+          Section {{ section.name }}
+        </router-link>
         |
       </span>
     </div>
@@ -25,8 +25,7 @@ export default class App extends Vue {
 
   mounted() {
     for (let i = 0; i < DEFAULT_NUMBER_OF_SECTIONS; i++) {
-      this.sections.push({ name: "*" + i.toString() });
-      // this.addBlock();
+      this.sections.push({ name: i.toString() });
     }
   }
 }

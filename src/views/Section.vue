@@ -1,29 +1,38 @@
 <template>
   <div class="about">
-    <h1>This is about Section #{{ $route.params.id }}</h1>
-    <vue-draggable-resizable>
-      I'm a <b>vue-draggable-resizable</b> Block!
-    </vue-draggable-resizable>
-    <div v-for="(block, index) in blocks" class="block" :key="index">
+    <h1>This is Section #{{ $route.params.id }}</h1>
+    <vue-draggable-resizable
+      v-for="(block, index) in blocks"
+      :key="index"
+      :w="block.width"
+      :h="block.height"
+      :style="{ background: block.background }"
+    >
       <div @click="removeBlock(index)" class="remove-icon">
         X
       </div>
-      Name: {{ block.name }}
-    </div>
+      I'm a <b>vue-draggable-resizable</b> Block!
+      <div class="block">Name: {{ block.name }}</div>
+    </vue-draggable-resizable>
     <button @click="addBlock">
       Add
     </button>
     <button @click="restoreBlock" :disabled="!removedBlocks.length">
       Restore
     </button>
-    {{ removedBlocks }}
+    <!-- {{ removedBlocks }} -->
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { DEFAULT_NUMBER_OF_BLOCKS } from "@/config";
+import {
+  DEFAULT_NUMBER_OF_BLOCKS,
+  DEFAULT_BLOCK_WIDTH,
+  DEFAULT_BLOCK_HEIGHT,
+  SET_OF_BACKGROUNDS
+} from "@/config";
 import { Block } from "@/interfaces";
 import VueDraggableResizable from "vue-draggable-resizable";
 import "vue-draggable-resizable/dist/VueDraggableResizable.css";
@@ -32,19 +41,17 @@ Vue.component("vue-draggable-resizable", VueDraggableResizable);
 
 @Component
 export default class Section extends Vue {
-  // data() {
-  //   return {
-  // lala: "lala",
-  //   };
-  // },
-  // blocks: Block[],
   blocks: Block[] = [];
   removedBlocks: Block[] = [];
   nextIndex = 0;
 
   addBlock(): void {
     this.blocks.push({
-      name: `I'm an element #${++this.nextIndex}.`
+      name: `I'm an element #${++this.nextIndex}.`,
+      width: DEFAULT_BLOCK_WIDTH,
+      height: DEFAULT_BLOCK_HEIGHT,
+      background:
+        SET_OF_BACKGROUNDS[this.blocks.length % SET_OF_BACKGROUNDS.length]
     });
   }
 
@@ -58,6 +65,8 @@ export default class Section extends Vue {
     const restoredBlock = this.removedBlocks.pop();
 
     if (restoredBlock !== undefined) {
+      restoredBlock.width = DEFAULT_BLOCK_WIDTH;
+      restoredBlock.height = DEFAULT_BLOCK_HEIGHT;
       this.blocks.push(restoredBlock); // yeah, KISS
     }
   }
