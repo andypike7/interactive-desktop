@@ -2,26 +2,29 @@
   <div class="about">
     <h1>This is about Section #{{ $route.params.id }}</h1>
     <div v-for="(block, index) in blocks" class="block" :key="index">
-      <div @click="remove(index)" class="remove-icon">
+      <div @click="removeBlock(index)" class="remove-icon">
         X
       </div>
       Name: {{ block.name }}
     </div>
-    <button @click="add">
+    <button @click="addBlock">
       Add
     </button>
+    <button @click="restoreBlock" :disabled="!removedBlocks.length">
+      Restore
+    </button>
+    {{ removedBlocks }}
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
+import { DEFAULT_NUMBER_OF_BLOCKS } from "../config";
 
 interface Block {
   name: string;
 }
-
-const DEFAULT_NUMBER_OF_BLOCKS = 5;
 
 @Component
 export default class Section extends Vue {
@@ -32,21 +35,32 @@ export default class Section extends Vue {
   // },
   // blocks: Block[],
   blocks: Block[] = [];
-  nextIndex = 1;
+  removedBlocks: Block[] = [];
+  nextIndex = 0;
 
-  remove(index: number): void {
-    this.blocks.splice(index, 1);
-  }
-
-  add(): void {
+  addBlock(): void {
     this.blocks.push({
-      name: `I'm an element #${this.nextIndex++}.`
+      name: `I'm an element #${++this.nextIndex}.`
     });
   }
 
+  removeBlock(index: number): void {
+    const removedBlocks = this.blocks.splice(index, 1);
+
+    this.removedBlocks.push(removedBlocks[0]); // yeah, KISS
+  }
+
+  restoreBlock(): void {
+    const restoredBlock = this.removedBlocks.pop();
+
+    if (restoredBlock !== undefined) {
+      this.blocks.push(restoredBlock); // yeah, KISS
+    }
+  }
+
   mounted() {
-    for (let i = 1; i <= DEFAULT_NUMBER_OF_BLOCKS; i++) {
-      this.add();
+    for (let i = 0; i < DEFAULT_NUMBER_OF_BLOCKS; i++) {
+      this.addBlock();
     }
   }
 }
