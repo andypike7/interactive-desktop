@@ -1,4 +1,5 @@
-import { CONFIG } from "@/config";
+import { CONFIG, DEFAULT_NUMBER_OF_SECTIONS } from "@/config";
+import { Section } from "@/interfaces";
 
 export const Utils = {
   centeredX() {
@@ -24,3 +25,15 @@ export const Utils = {
     );
   }
 };
+
+export function getNavMenu(): Section[] {
+  const sections: Section[] = [];
+
+  for (let i = 1; i <= DEFAULT_NUMBER_OF_SECTIONS; i++) {
+    sections.push({
+      name: `Section ${i}`,
+      to: `/section/${i}`
+    });
+  }
+  return sections;
+}

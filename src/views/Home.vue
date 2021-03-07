@@ -2,12 +2,12 @@
   <div class="home">
     <h1>Please select a section</h1>
     <router-link
-      v-for="link in links"
-      :to="link.to"
-      :key="link.name"
+      v-for="section in sections"
+      :to="section.to"
+      :key="section.name"
       class="link"
     >
-      {{ link.name }}
+      {{ section.name }}
     </router-link>
   </div>
 </template>
@@ -16,19 +16,12 @@
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
 import { Section } from "@/interfaces";
-import { DEFAULT_NUMBER_OF_SECTIONS } from "@/config";
+import { getNavMenu } from "@/utils";
 
 @Component
 export default class Home extends Vue {
-  links: Section[] = [];
-
-  mounted() {
-    for (let i = 1; i <= DEFAULT_NUMBER_OF_SECTIONS; i++) {
-      this.links.push({
-        name: `Section ${i.toString()}`,
-        to: `/section/${i}`
-      });
-    }
+  get sections(): Section[] {
+    return getNavMenu();
   }
 }
 </script>

@@ -16,20 +16,13 @@
 <script lang="ts">
 import Vue from "vue";
 import { Component } from "vue-property-decorator";
-import { DEFAULT_NUMBER_OF_SECTIONS } from "@/config";
 import { Section } from "@/interfaces";
+import { getNavMenu } from "@/utils";
 
 @Component
 export default class App extends Vue {
-  sections: Section[] = [];
-
-  mounted() {
-    for (let i = 1; i <= DEFAULT_NUMBER_OF_SECTIONS; i++) {
-      this.sections.push({
-        name: `Section ${i}`,
-        to: `/section/${i}`
-      });
-    }
+  get sections(): Section[] {
+    return getNavMenu();
   }
 }
 </script>

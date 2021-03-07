@@ -1,7 +1,13 @@
 <template>
   <div class="wrapper">
     <h1>This is Section #{{ $route.params.id }}</h1>
-    <div class="board">
+    <div
+      class="board"
+      :style="{
+        width: `${config.BOARD_WIDTH}px`,
+        height: `${config.BOARD_HEIGHT}px`
+      }"
+    >
       <vue-draggable-resizable
         v-for="(block, index) in blocks"
         :key="index"
@@ -187,8 +193,6 @@ export default class Section extends Vue {
 .board {
   border: 2px solid black;
   padding: 10px;
-  width: 800px;
-  height: 500px;
   margin: 0 auto 20px;
 }
 .block {
