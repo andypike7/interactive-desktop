@@ -1,5 +1,6 @@
 export interface Section {
   name: string;
+  to: string;
 }
 
 export interface Block {

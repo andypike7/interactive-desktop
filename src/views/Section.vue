@@ -30,28 +30,31 @@
         </div>
       </vue-draggable-resizable>
     </div>
-    <button @click="addBlock">
-      Add
-    </button>
-    <button @click="restoreBlock" :disabled="!removedBlocks.length">
-      Restore
-    </button>
-    <button @click="generateBlocks">
-      Geneate
-    </button>
-    <button @click="clearBlocks" :disabled="!blocks.length">
-      Clear
-    </button>
+    <div class="actions-panel">
+      <button @click="addBlock">
+        Add
+      </button>
+      <button @click="restoreBlock" :disabled="!removedBlocks.length">
+        Restore
+      </button>
+      <button @click="generateBlocks">
+        Geneate
+      </button>
+      <button @click="clearBlocks" :disabled="!blocks.length">
+        Clear
+      </button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import { Component, Watch } from "vue-property-decorator";
-import { DEFAULT_NUMBER_OF_BLOCKS, CONFIG } from "@/config";
-import { Block } from "@/interfaces";
-import VueDraggableResizable from "vue-draggable-resizable";
 import "vue-draggable-resizable/dist/VueDraggableResizable.css";
+import VueDraggableResizable from "vue-draggable-resizable";
+import { Block } from "@/interfaces";
+import { Utils } from "@/utils";
+import { DEFAULT_NUMBER_OF_BLOCKS, CONFIG } from "@/config";
 
 Vue.component("vue-draggable-resizable", VueDraggableResizable);
 
@@ -62,22 +65,13 @@ export default class Section extends Vue {
   activeIndex = 0;
   config = CONFIG;
 
-  @Watch("blocks")
-  saveState() {
-    localStorage.setItem("blocks", JSON.stringify(this.blocks));
-  }
-
-  nextIndex() {
-    return this.blocks.reduce((acc, el) => Math.max(acc, el.z), 0) + 1;
-  }
-
   addBlock(centered = false): void {
     this.blocks.push({
-      name: `I'm an element #${this.nextIndex()}.`,
+      name: `I'm element #${this.nextIndex}.`,
       width: CONFIG.DEFAULT_BLOCK_WIDTH,
       height: CONFIG.DEFAULT_BLOCK_HEIGHT,
-      x: centered ? this.centeredX() : this.randomX(),
-      y: centered ? this.centeredY() : this.randomY(),
+      x: centered ? Utils.centeredX() : Utils.randomX(),
+      y: centered ? Utils.centeredY() : Utils.randomY(),
       z: this.blocks.length,
       background:
         CONFIG.SET_OF_BACKGROUNDS[
@@ -96,42 +90,18 @@ export default class Section extends Vue {
     this.blocks = [];
   }
 
-  randomX() {
-    return (
-      Math.trunc(
-        (Math.random() * (CONFIG.BOARD_WIDTH - CONFIG.DEFAULT_BLOCK_WIDTH)) /
-          CONFIG.GRID
-      ) * CONFIG.GRID
-    );
-  }
-  randomY() {
-    return (
-      Math.trunc(
-        (Math.random() * (CONFIG.BOARD_HEIGHT - CONFIG.DEFAULT_BLOCK_HEIGHT)) /
-          CONFIG.GRID
-      ) * CONFIG.GRID
-    );
-  }
-
   removeBlock(index: number): void {
     const removedBlocks = this.blocks.splice(index, 1);
 
     this.removedBlocks.push(removedBlocks[0]);
   }
 
-  centeredX() {
-    return (CONFIG.BOARD_WIDTH - CONFIG.DEFAULT_BLOCK_WIDTH) / 2;
-  }
-  centeredY() {
-    return (CONFIG.BOARD_HEIGHT - CONFIG.DEFAULT_BLOCK_HEIGHT) / 2;
-  }
-
   restoreBlock(): void {
     const restoredBlock = this.removedBlocks.pop();
 
     if (restoredBlock !== undefined) {
-      restoredBlock.x = this.centeredX();
-      restoredBlock.y = this.centeredY();
+      restoredBlock.x = Utils.centeredX();
+      restoredBlock.y = Utils.centeredY();
       restoredBlock.width = CONFIG.DEFAULT_BLOCK_WIDTH;
       restoredBlock.height = CONFIG.DEFAULT_BLOCK_HEIGHT;
       this.blocks.push(restoredBlock);
@@ -145,7 +115,7 @@ export default class Section extends Vue {
     this.activeIndex = activeIndex;
 
     const z = this.blocks[activeIndex].z;
-    const next = this.nextIndex();
+    const next = this.nextIndex;
 
     this.blocks.forEach((block, index) => {
       if (activeIndex === index) {
@@ -178,12 +148,34 @@ export default class Section extends Vue {
     }
   }
 
-  mounted() {
-    const blocks = localStorage.getItem("blocks");
+  // Misc
+
+  get lsName() {
+    return `blocks-${this.$route.params.id}`;
+  }
+
+  get nextIndex(): number {
+    return this.blocks.reduce((acc, el) => Math.max(acc, el.z), 0) + 1;
+  }
+
+  // State Managing
+
+  @Watch("$route.params.id")
+  updateSection() {
+    const blocks = localStorage.getItem(this.lsName);
 
     if (blocks) {
       this.blocks = JSON.parse(blocks);
     }
+  }
+
+  mounted() {
+    this.updateSection();
+  }
+
+  @Watch("blocks")
+  saveState() {
+    localStorage.setItem(this.lsName, JSON.stringify(this.blocks));
   }
 }
 </script>
@@ -199,7 +191,6 @@ export default class Section extends Vue {
   height: 500px;
   margin: 0 auto 20px;
 }
-
 .block {
   user-select: none !important;
   cursor: move;
@@ -221,7 +212,7 @@ export default class Section extends Vue {
     background: maroon;
   }
 }
-button {
+.actions-panel button {
   font-size: 24px;
   margin: 0 5px;
 }
