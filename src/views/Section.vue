@@ -1,5 +1,14 @@
 <template>
   <div class="wrapper">
+    <div class="nav">
+      <span class="nav__link">
+        <router-link to="/">Home</router-link>
+      </span>
+      <span v-for="section in sections" :key="section.name" class="nav__link">
+        |
+        <router-link :to="section.to">{{ section.name }}</router-link>
+      </span>
+    </div>
     <h1>This is Section #{{ $route.params.id }}</h1>
     <div
       class="board"
@@ -61,58 +70,17 @@ import VueDraggableResizable from "vue-draggable-resizable";
 import { Block } from "@/interfaces";
 import { Utils } from "@/utils";
 import { DEFAULT_NUMBER_OF_BLOCKS, CONFIG } from "@/config";
+import { Section } from "@/interfaces";
+import { getNavMenu } from "@/utils";
 
 Vue.component("vue-draggable-resizable", VueDraggableResizable);
 
 @Component
-export default class Section extends Vue {
+export default class SectionD extends Vue {
   blocks: Block[] = [];
   removedBlocks: Block[] = [];
   activeIndex = 0;
   config = CONFIG;
-
-  addBlock(centered = false): void {
-    this.blocks.push({
-      name: `I'm element #${this.nextIndex}.`,
-      width: CONFIG.DEFAULT_BLOCK_WIDTH,
-      height: CONFIG.DEFAULT_BLOCK_HEIGHT,
-      x: centered ? Utils.centeredX() : Utils.randomX(),
-      y: centered ? Utils.centeredY() : Utils.randomY(),
-      z: this.blocks.length,
-      background:
-        CONFIG.SET_OF_BACKGROUNDS[
-          this.blocks.length % CONFIG.SET_OF_BACKGROUNDS.length
-        ]
-    });
-  }
-
-  generateBlocks() {
-    for (let i = 0; i < DEFAULT_NUMBER_OF_BLOCKS; i++) {
-      this.addBlock();
-    }
-  }
-
-  clearBlocks() {
-    this.blocks = [];
-  }
-
-  removeBlock(index: number): void {
-    const removedBlocks = this.blocks.splice(index, 1);
-
-    this.removedBlocks.push(removedBlocks[0]);
-  }
-
-  restoreBlock(): void {
-    const restoredBlock = this.removedBlocks.pop();
-
-    if (restoredBlock !== undefined) {
-      restoredBlock.x = Utils.centeredX();
-      restoredBlock.y = Utils.centeredY();
-      restoredBlock.width = CONFIG.DEFAULT_BLOCK_WIDTH;
-      restoredBlock.height = CONFIG.DEFAULT_BLOCK_HEIGHT;
-      this.blocks.push(restoredBlock);
-    }
-  }
 
   blockActivated(activeIndex: number): void {
     if (!this.blocks.length) {
@@ -154,7 +122,56 @@ export default class Section extends Vue {
     }
   }
 
+  // Actions
+
+  addBlock(centered = false): void {
+    this.blocks.push({
+      name: `I'm element #${this.nextIndex}.`,
+      width: CONFIG.DEFAULT_BLOCK_WIDTH,
+      height: CONFIG.DEFAULT_BLOCK_HEIGHT,
+      x: centered ? Utils.centeredX() : Utils.randomX(),
+      y: centered ? Utils.centeredY() : Utils.randomY(),
+      z: this.blocks.length,
+      background:
+        CONFIG.SET_OF_BACKGROUNDS[
+          this.blocks.length % CONFIG.SET_OF_BACKGROUNDS.length
+        ]
+    });
+  }
+
+  restoreBlock(): void {
+    const restoredBlock = this.removedBlocks.pop();
+
+    if (restoredBlock !== undefined) {
+      restoredBlock.x = Utils.centeredX();
+      restoredBlock.y = Utils.centeredY();
+      restoredBlock.width = CONFIG.DEFAULT_BLOCK_WIDTH;
+      restoredBlock.height = CONFIG.DEFAULT_BLOCK_HEIGHT;
+      this.blocks.push(restoredBlock);
+    }
+  }
+
+  generateBlocks() {
+    for (let i = 0; i < DEFAULT_NUMBER_OF_BLOCKS; i++) {
+      this.addBlock();
+    }
+  }
+
+  clearBlocks() {
+    this.blocks = [];
+  }
+
+  removeBlock(index: number): void {
+    const removedBlocks = this.blocks.splice(index, 1);
+
+    this.removedBlocks.push(removedBlocks[0]);
+  }
+
   // Misc
+
+  get sections(): Section[] {
+    return getNavMenu();
+  }
 
   get lsName() {
     return `blocks-${this.$route.params.id}`;
@@ -189,6 +206,18 @@ export default class Section extends Vue {
 <style lang="scss" scoped>
 .wrapper {
   text-align: center;
+}
+.nav {
+  text-align: center;
+  color: black;
+  a {
+    color: black;
+    text-decoration: none;
+    padding: 5px;
+    &:hover {
+      background: #eee;
+    }
+  }
 }
 .board {
   border: 2px solid black;
