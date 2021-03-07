@@ -36,12 +36,18 @@
     <button @click="restoreBlock" :disabled="!removedBlocks.length">
       Restore
     </button>
+    <button @click="generateBlocks">
+      Geneate
+    </button>
+    <button @click="clearBlocks" :disabled="!blocks.length">
+      Clear
+    </button>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import { Component } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import { DEFAULT_NUMBER_OF_BLOCKS, CONFIG } from "@/config";
 import { Block } from "@/interfaces";
 import VueDraggableResizable from "vue-draggable-resizable";
@@ -53,13 +59,21 @@ Vue.component("vue-draggable-resizable", VueDraggableResizable);
 export default class Section extends Vue {
   blocks: Block[] = [];
   removedBlocks: Block[] = [];
-  nextIndex = 0;
   activeIndex = 0;
   config = CONFIG;
 
+  @Watch("blocks")
+  saveState() {
+    localStorage.setItem("blocks", JSON.stringify(this.blocks));
+  }
+
+  nextIndex() {
+    return this.blocks.reduce((acc, el) => Math.max(acc, el.z), 0) + 1;
+  }
+
   addBlock(centered = false): void {
     this.blocks.push({
-      name: `I'm an element #${++this.nextIndex}.`,
+      name: `I'm an element #${this.nextIndex()}.`,
       width: CONFIG.DEFAULT_BLOCK_WIDTH,
       height: CONFIG.DEFAULT_BLOCK_HEIGHT,
       x: centered ? this.centeredX() : this.randomX(),
@@ -70,6 +84,16 @@ export default class Section extends Vue {
           this.blocks.length % CONFIG.SET_OF_BACKGROUNDS.length
         ]
     });
+  }
+
+  generateBlocks() {
+    for (let i = 0; i < DEFAULT_NUMBER_OF_BLOCKS; i++) {
+      this.addBlock();
+    }
+  }
+
+  clearBlocks() {
+    this.blocks = [];
   }
 
   randomX() {
@@ -115,13 +139,18 @@ export default class Section extends Vue {
   }
 
   blockActivated(activeIndex: number): void {
+    if (!this.blocks.length) {
+      return;
+    }
     this.activeIndex = activeIndex;
 
-    const z = this.blocks[this.activeIndex].z;
+    const z = this.blocks[activeIndex].z;
+    const next = this.nextIndex();
+
     this.blocks.forEach((block, index) => {
       if (activeIndex === index) {
-        block.z = this.nextIndex - 1;
-      } else if (block.z > z) {
+        block.z = next - 1;
+      } else if (block.z > z && block.z !== 0) {
         block.z--;
       }
     });
@@ -130,22 +159,30 @@ export default class Section extends Vue {
   blockResized(x: number, y: number, width: number, height: number): void {
     const block = this.blocks[this.activeIndex];
 
-    block.x = x;
-    block.y = y;
-    block.width = width;
-    block.height = height;
+    if (block) {
+      block.x = x;
+      block.y = y;
+      block.width = width;
+      block.height = height;
+      this.saveState();
+    }
   }
 
   blockDragged(x: number, y: number): void {
     const block = this.blocks[this.activeIndex];
 
-    block.x = x;
-    block.y = y;
+    if (block) {
+      block.x = x;
+      block.y = y;
+      this.saveState();
+    }
   }
 
   mounted() {
-    for (let i = 0; i < DEFAULT_NUMBER_OF_BLOCKS; i++) {
-      this.addBlock();
+    const blocks = localStorage.getItem("blocks");
+
+    if (blocks) {
+      this.blocks = JSON.parse(blocks);
     }
   }
 }
@@ -183,5 +220,9 @@ export default class Section extends Vue {
     color: yellow;
     background: maroon;
   }
+}
+button {
+  font-size: 24px;
+  margin: 0 5px;
 }
 </style>
