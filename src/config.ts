@@ -10,13 +10,13 @@ export const CONFIG = {
   DEFAULT_BLOCK_WIDTH: 300,
   DEFAULT_BLOCK_HEIGHT: 100,
   SET_OF_BACKGROUNDS: [
-    "red",
-    "blue",
-    "green",
-    "orange",
-    "yellow",
-    "violet",
-    "maroon",
-    "gray"
-  ]
+    'red',
+    'blue',
+    'green',
+    'orange',
+    'yellow',
+    'violet',
+    'maroon',
+    'gray',
+  ],
 };

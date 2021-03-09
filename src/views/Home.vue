@@ -13,10 +13,10 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import { Section } from "@/interfaces";
-import { getNavMenu } from "@/utils";
+import Vue from 'vue';
+import { Component } from 'vue-property-decorator';
+import { Section } from '@/interfaces';
+import { getNavMenu } from '@/utils';
 
 @Component
 export default class Home extends Vue {

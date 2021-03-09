@@ -4,6 +4,6 @@
 
 <style lang="scss">
 body {
-  font: 14px "Verdana";
+  font: 14px Verdana;
 }
 </style>

@@ -14,7 +14,7 @@
       class="board"
       :style="{
         width: `${config.BOARD_WIDTH}px`,
-        height: `${config.BOARD_HEIGHT}px`
+        height: `${config.BOARD_HEIGHT}px`,
       }"
     >
       <vue-draggable-resizable
@@ -63,20 +63,23 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import { Component, Watch } from "vue-property-decorator";
-import "vue-draggable-resizable/dist/VueDraggableResizable.css";
-import VueDraggableResizable from "vue-draggable-resizable";
-import { Block } from "@/interfaces";
-import { Utils } from "@/utils";
-import { DEFAULT_NUMBER_OF_BLOCKS, CONFIG } from "@/config";
-import { Section } from "@/interfaces";
-import { getNavMenu } from "@/utils";
+import Vue from 'vue';
+import { Component, Watch } from 'vue-property-decorator';
+import 'vue-draggable-resizable/dist/VueDraggableResizable.css';
+import VueDraggableResizable from 'vue-draggable-resizable';
+import { getNavMenu } from '@/utils';
+import { DEFAULT_NUMBER_OF_BLOCKS, CONFIG } from '@/config';
+import { Section, Block } from '@/interfaces';
+import { Utils } from '@/utils';
 
-Vue.component("vue-draggable-resizable", VueDraggableResizable);
+Vue.component('vue-draggable-resizable', VueDraggableResizable);
 
-@Component
-export default class SectionD extends Vue {
+@Component({
+  // components: {
+  //   Block22
+  // }
+})
+export default class SectionPage extends Vue {
   blocks: Block[] = [];
   removedBlocks: Block[] = [];
   activeIndex = 0;
@@ -135,7 +138,7 @@ export default class SectionD extends Vue {
       background:
         CONFIG.SET_OF_BACKGROUNDS[
           this.blocks.length % CONFIG.SET_OF_BACKGROUNDS.length
-        ]
+        ],
     });
   }
 
@@ -173,22 +176,20 @@ export default class SectionD extends Vue {
     return getNavMenu();
   }
 
-  get lsName() {
-    return `blocks-${this.$route.params.id}`;
-  }
-
   get nextIndex(): number {
     return this.blocks.reduce((acc, el) => Math.max(acc, el.z), 0) + 1;
   }
 
   // State Managing
 
-  @Watch("$route.params.id")
+  @Watch('$route.params.id')
   updateSection() {
-    const blocks = localStorage.getItem(this.lsName);
+    const blocks = this.$store.state.blocks[this.$route.params.id];
 
     if (blocks) {
-      this.blocks = JSON.parse(blocks);
+      this.blocks = blocks;
+    } else {
+      this.blocks = [];
     }
   }
 
@@ -196,9 +197,12 @@ export default class SectionD extends Vue {
     this.updateSection();
   }
 
-  @Watch("blocks")
+  @Watch('blocks')
   saveState() {
-    localStorage.setItem(this.lsName, JSON.stringify(this.blocks));
+    this.$store.commit('updateBlocks', {
+      blocks: this.blocks,
+      index: this.$route.params.id,
+    });
   }
 }
 </script>
@@ -224,6 +228,10 @@ export default class SectionD extends Vue {
   padding: 10px;
   margin: 0 auto 20px;
 }
+.actions-panel button {
+  font-size: 24px;
+  margin: 0 5px;
+}
 .block {
   user-select: none !important;
   cursor: move;
@@ -244,9 +252,5 @@ export default class SectionD extends Vue {
     color: yellow;
     background: maroon;
   }
-}
-.actions-panel button {
-  font-size: 24px;
-  margin: 0 5px;
 }
 </style>

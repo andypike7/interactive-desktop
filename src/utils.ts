@@ -1,5 +1,5 @@
-import { CONFIG, DEFAULT_NUMBER_OF_SECTIONS } from "@/config";
-import { Section } from "@/interfaces";
+import { CONFIG, DEFAULT_NUMBER_OF_SECTIONS } from '@/config';
+import { Section } from '@/interfaces';
 
 export const Utils = {
   centeredX() {
@@ -12,7 +12,7 @@ export const Utils = {
     return (
       Math.trunc(
         (Math.random() * (CONFIG.BOARD_WIDTH - CONFIG.DEFAULT_BLOCK_WIDTH)) /
-          CONFIG.GRID
+          CONFIG.GRID,
       ) * CONFIG.GRID
     );
   },
@@ -20,10 +20,10 @@ export const Utils = {
     return (
       Math.trunc(
         (Math.random() * (CONFIG.BOARD_HEIGHT - CONFIG.DEFAULT_BLOCK_HEIGHT)) /
-          CONFIG.GRID
+          CONFIG.GRID,
       ) * CONFIG.GRID
     );
-  }
+  },
 };
 
 export function getNavMenu(): Section[] {
@@ -32,7 +32,7 @@ export function getNavMenu(): Section[] {
   for (let i = 1; i <= DEFAULT_NUMBER_OF_SECTIONS; i++) {
     sections.push({
       name: `Section ${i}`,
-      to: `/section/${i}`
+      to: `/section/${i}`,
     });
   }
   return sections;
