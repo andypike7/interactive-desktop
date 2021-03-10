@@ -1,15 +1,15 @@
 <template>
   <vue-draggable-resizable
     :x="block.x"
-    :y="block ? block.y : 0"
-    :z="block ? block.z : 0"
-    :w="block ? block.width : 0"
-    :h="block ? block.height : 0"
+    :y="block.y"
+    :z="block.z"
+    :w="block.width"
+    :h="block.height"
     :grid="[config.GRID, config.GRID]"
     :minWidth="config.MIN_BLOCK_WIDTH"
     :minHeight="config.MIN_BLOCK_HEIGHT"
-    class="block"
     :style="{ background: block.background }"
+    class="block"
     parent
     @activated="activateBlock"
     @dragging="blockDragged"
@@ -23,14 +23,12 @@
       X = {{ block.x }}, Y = {{ block.y }}, Z = {{ block.z }}<br />
       W = {{ block.width }}, H = {{ block.height }}
     </div>
-    <!-- {{ block }} -->
   </vue-draggable-resizable>
 </template>
 
 <script lang="ts">
-// vue-draggable-resizable
 import Vue from 'vue';
-import { Component, Prop /*, Watch*/ } from 'vue-property-decorator';
+import { Component, Prop } from 'vue-property-decorator';
 import VueDraggableResizable from 'vue-draggable-resizable';
 import 'vue-draggable-resizable/dist/VueDraggableResizable.css';
 import { Block } from '@/interfaces';
@@ -43,23 +41,22 @@ export default class Blockcomp extends Vue {
   @Prop() initialBlock!: Block;
   @Prop() index!: number;
 
-  block: Block | null = null;
+  block = this.initialBlock;
   config = CONFIG;
 
   activateBlock(): void {
-    this.$emit('activateBlock', this.index);
+    this.$emit('activate', this.index);
   }
 
   removeBlock() {
-    console.log('removeBlock', this.index);
-    this.$emit('removeBlock', this.index);
+    this.$emit('remove', this.index);
   }
 
   blockDragged(x: number, y: number): void {
     if (this.block) {
       this.block.x = x;
       this.block.y = y;
-      this.$emit('updateBlock', this.block, this.index);
+      this.$emit('update', this.block, this.index);
     }
   }
 
@@ -69,12 +66,12 @@ export default class Blockcomp extends Vue {
       this.block.y = y;
       this.block.width = width;
       this.block.height = height;
-      this.$emit('updateBlock', this.block, this.index);
+      this.$emit('update', this.block, this.index);
     }
   }
 
   mounted() {
-    console.clear();
+    // console.clear();
     this.block = this.initialBlock;
   }
 }
@@ -96,6 +93,7 @@ export default class Blockcomp extends Vue {
   background: red;
   color: white;
   font-weight: bold;
+  padding: 0 3px;
   float: right;
   cursor: pointer;
   &:hover {

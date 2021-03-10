@@ -4,8 +4,8 @@ import { Block } from '@/interfaces';
 
 Vue.use(Vuex);
 
-function getBlocks(): Array<Block> {
-  let arr: Array<Block> = [];
+function getBlocks(): Block[] {
+  let arr: Block[] = [];
   const data = localStorage.getItem('blocks');
 
   try {

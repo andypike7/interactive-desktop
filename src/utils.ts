@@ -31,6 +31,7 @@ export function getNavMenu(): Section[] {
 
   for (let i = 1; i <= DEFAULT_NUMBER_OF_SECTIONS; i++) {
     sections.push({
+      id: i,
       name: `Section ${i}`,
       to: `/section/${i}`,
     });

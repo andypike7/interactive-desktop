@@ -1,12 +1,20 @@
 <template>
   <div class="wrapper">
     <div class="nav">
-      <span class="nav__link">
-        <router-link to="/">Home</router-link>
+      <span>
+        <router-link to="/" class="nav__link">Home</router-link>
       </span>
-      <span v-for="section in sections" :key="section.name" class="nav__link">
+      <span v-for="section in sections" :key="section.name">
         |
-        <router-link :to="section.to">{{ section.name }}</router-link>
+        <router-link
+          :to="section.to"
+          :class="[
+            'nav__link',
+            { 'nav__link--active': section.id === +$route.params.id },
+          ]"
+        >
+          {{ section.name }}</router-link
+        >
       </span>
     </div>
     <h1>This is Section #{{ $route.params.id }}</h1>
@@ -19,34 +27,13 @@
     >
       <Blockcomp
         v-for="(block, index) in blocks"
-        :initial-block="block"
+        :block="block"
         :key="`k_${index}`"
         :index="index"
-        @remove="removeBlock(index)"
         @activate="activateBlock(index)"
-        @update="updateBlock(index)"
+        @updateBlock="updateBlock(block, index)"
+        @removeBlock="removeBlock(index)"
       />
-      <!-- vue-draggable-resizable
-        v-for="(block, index) in blocks"
-        :key="index"
-        :x="block.x"
-        :y="block.y"
-        :z="block.z"
-        :w="block.width"
-        :h="block.height"
-        :grid="[config.GRID, config.GRID]"
-        class="block"
-        :style="{ background: block.background }"
-        parent
-        @dragging="blockDragged"
-        @resizing="blockResized"
-      >
-        <b>{{ block.name }}</b>
-        <div class="coords">
-          X = {{ block.x }}, Y = {{ block.y }}, Z = {{ block.z }}<br />
-          W = {{ block.width }}, H = {{ block.height }}
-        </div>
-      </!-->
     </div>
     <div class="actions-panel">
       <button @click="addBlock">
@@ -83,44 +70,6 @@ export default class SectionPage extends Vue {
   activeIndex = 0;
   config = CONFIG;
 
-  activateBlock(activeIndex: number) {
-    this.activeIndex = activeIndex;
-
-    const currentZ = this.blocks[activeIndex].z;
-    const maxZ = this.nextIndex - 1;
-
-    this.blocks.forEach((block, index) => {
-      if (activeIndex === index) {
-        block.z = maxZ;
-      } else if (block.z > currentZ) {
-        block.z--;
-      }
-    });
-  }
-
-  blockActivated(activeIndex: number): void {
-    if (!this.blocks.length) {
-      return;
-    }
-    this.activeIndex = activeIndex;
-
-    const z = this.blocks[activeIndex].z;
-    const next = this.nextIndex;
-
-    this.blocks.forEach((block, index) => {
-      if (activeIndex === index) {
-        block.z = next - 1;
-      } else if (block.z > z && block.z !== 0) {
-        block.z--;
-      }
-    });
-  }
-
-  updateBlock(block: Block, index: number) {
-    this.blocks[index] = block;
-    this.saveState();
-  }
-
   // Actions
 
   addBlock(centered = false): void {
@@ -130,7 +79,7 @@ export default class SectionPage extends Vue {
       height: CONFIG.DEFAULT_BLOCK_HEIGHT,
       x: centered ? Utils.centeredX() : Utils.randomX(),
       y: centered ? Utils.centeredY() : Utils.randomY(),
-      z: this.blocks.length,
+      z: this.nextIndex,
       background:
         CONFIG.SET_OF_BACKGROUNDS[
           this.blocks.length % CONFIG.SET_OF_BACKGROUNDS.length
@@ -144,7 +93,6 @@ export default class SectionPage extends Vue {
     if (restoredBlock !== undefined) {
       restoredBlock.x = Utils.centeredX();
       restoredBlock.y = Utils.centeredY();
-      restoredBlock.z = this.nextIndex;
       restoredBlock.width = CONFIG.DEFAULT_BLOCK_WIDTH;
       restoredBlock.height = CONFIG.DEFAULT_BLOCK_HEIGHT;
       this.blocks.push(restoredBlock);
@@ -169,12 +117,32 @@ export default class SectionPage extends Vue {
 
   // Misc
 
-  get sections(): Section[] {
-    return getNavMenu();
+  activateBlock(activeIndex: number) {
+    this.activeIndex = activeIndex;
+
+    const currentZ = this.blocks[activeIndex].z;
+    const maxZ = this.nextIndex - 1;
+
+    this.blocks.forEach((block, index) => {
+      if (activeIndex === index) {
+        block.z = maxZ;
+      } else if (block.z > currentZ) {
+        block.z--;
+      }
+    });
+
+    console.log('*** SS 1');
+    this.saveState();
   }
 
   get nextIndex(): number {
-    return this.blocks.reduce((acc, el) => Math.max(acc, el.z), 0) + 1;
+    return this.blocks.length
+      ? this.blocks.reduce((acc, el) => Math.max(acc, el.z), 0) + 1
+      : 0;
+  }
+
+  get sections(): Section[] {
+    return getNavMenu();
   }
 
   // State Managing
@@ -183,24 +151,42 @@ export default class SectionPage extends Vue {
   updateSection() {
     const blocks = this.$store.state.blocks[this.$route.params.id];
 
-    if (blocks) {
-      this.blocks = blocks;
-    } else {
-      this.blocks = [];
-    }
+    this.blocks = blocks && blocks.length ? blocks : [];
+  }
+
+  beforeMount() {
+    // this.$store.dispatch('getBlocks');
   }
 
   mounted() {
-    console.clear();
-    this.updateSection();
+    // console.clear();
+    console.log('-------------- 1');
+    // this.$store.commit('getBlocks');
+    // this.$store.dispatch('getBlocks');
+    this.blocks = this.$store.state.blocks[this.$route.params.id];
+    if (!this.blocks) {
+      this.blocks = [];
+    }
+    // this.updateSection();
+    console.log('-------------- 2');
   }
 
   @Watch('blocks')
   saveState() {
+    console.log('*** SS 3');
+    console.log('*** id:', +this.$route.params.id - 1);
+    console.log('*** saveState:', this.blocks);
     this.$store.commit('updateBlocks', {
       blocks: this.blocks,
-      index: this.$route.params.id,
+      index: +this.$route.params.id - 1,
     });
+  }
+
+  updateBlock(block: Block, index: number) {
+    // console.log('*** updateBlock:', index);
+    this.blocks[index] = block;
+    console.log('*** SS 2');
+    this.saveState();
   }
 }
 </script>
@@ -212,14 +198,18 @@ export default class SectionPage extends Vue {
 .nav {
   text-align: center;
   color: black;
-  a {
-    color: black;
-    text-decoration: none;
-    padding: 5px;
-    &:hover {
-      background: #eee;
-    }
+}
+.nav__link {
+  color: black;
+  text-decoration: none;
+  padding: 5px;
+  &:hover {
+    background: #eee;
   }
+}
+.nav__link--active {
+  cursor: default;
+  background: #eee;
 }
 .board {
   border: 2px solid black;
@@ -229,27 +219,5 @@ export default class SectionPage extends Vue {
 .actions-panel button {
   font-size: 24px;
   margin: 0 5px;
-}
-.block {
-  user-select: none !important;
-  cursor: move;
-  padding: 5px;
-}
-.coords {
-  border-top: 1px dotted black;
-  margin-top: 5px;
-  padding-top: 5px;
-}
-.remove-icon {
-  background: red;
-  color: white;
-  font-weight: bold;
-  float: right;
-  cursor: pointer;
-  padding: 0 3px;
-  &:hover {
-    color: yellow;
-    background: maroon;
-  }
 }
 </style>
