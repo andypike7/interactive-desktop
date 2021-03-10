@@ -5,10 +5,10 @@ export interface Section {
 
 export interface Block {
   name: string;
-  width: number;
-  height: number;
   x: number;
   y: number;
   z: number;
+  width: number;
+  height: number;
   background: string;
 }

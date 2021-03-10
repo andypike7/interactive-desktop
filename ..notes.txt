@@ -1,0 +1,33 @@
+c:
+cd \Projects
+vue create interactive-desktop
+cd \Projects\interactive-desktop
+
+git init
+git add .
+git commit -m "Initial"
+git branch -M master
+git remote add origin https://github.com/andypike7/interactive-desktop.git
+git push -u origin master
+
+npm run serve
+
+tsconfig.json:
+  "experimentalDecorators": true,
+
+npm install --save-dev prettier-eslint
+
+package.json:
+  "prettier": {
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "arrowParens": "always"
+  }
+
+Draggable And Resizable Component For Vue.js
+vue-drag-resize
+
+npm install --save-dev vue-class-component
+npm install --save-dev vue-property-decorator@9.1.2
