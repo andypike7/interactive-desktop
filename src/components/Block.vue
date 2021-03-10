@@ -18,7 +18,7 @@
     <div @click="removeBlock" class="remove-icon">
       X
     </div>
-    <b>{{ block.name }}</b>
+    <b>I'm element #{{ block.id + 1 }} of {{ block.section }}</b>
     <div class="coords">
       X = {{ block.x }}, Y = {{ block.y }}, Z = {{ block.z }}<br />
       W = {{ block.width }}, H = {{ block.height }}
@@ -49,14 +49,14 @@ export default class Blockcomp extends Vue {
   }
 
   removeBlock() {
-    this.$emit('remove', this.index);
+    this.$emit('remove');
   }
 
   blockDragged(x: number, y: number): void {
     if (this.block) {
       this.block.x = x;
       this.block.y = y;
-      this.$emit('update', this.block, this.index);
+      this.$emit('update');
     }
   }
 
@@ -66,12 +66,11 @@ export default class Blockcomp extends Vue {
       this.block.y = y;
       this.block.width = width;
       this.block.height = height;
-      this.$emit('update', this.block, this.index);
+      this.$emit('update');
     }
   }
 
   mounted() {
-    // console.clear();
     this.block = this.initialBlock;
   }
 }

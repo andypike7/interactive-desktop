@@ -7,12 +7,16 @@ const routes: Array<RouteConfig> = [
   {
     path: '/',
     name: 'Home',
-    component: () => import('@/views/Home.vue'),
+    component: () => import('@/components/Home.vue'),
   },
   {
     path: '/section/:id',
     name: 'SectionPage',
-    component: () => import('@/views/Section.vue'),
+    component: () => import('@/components/Section.vue'),
+  },
+  {
+    path: '*',
+    redirect: '/',
   },
 ];
 

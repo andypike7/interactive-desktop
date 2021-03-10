@@ -5,7 +5,8 @@ export interface Section {
 }
 
 export interface Block {
-  name: string;
+  id: number;
+  section: number;
   x: number;
   y: number;
   z: number;
