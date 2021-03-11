@@ -6,7 +6,7 @@ Based on awesome vue-draggable-resizable package:
 https://github.com/mauricius/vue-draggable-resizable
 
 Live demo:
-f
+http://interactive-desktop.sym.ru
 
 ## Project setup
 ```

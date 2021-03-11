@@ -1,6 +1,11 @@
 <template>
   <div class="home">
-    <h1>Please select a section</h1>
+    <h1>
+      Please select a section
+      <a class="github" href="https://github.com/andypike7/interactive-desktop">
+        View source on Github.
+      </a>
+    </h1>
     <router-link
       v-for="section in sections"
       :to="section.to"
@@ -43,5 +48,11 @@ h1 {
   &:hover {
     background: #eee;
   }
+}
+.github {
+  font-size: 12px;
+  color: blue;
+  display: block;
+  font-weight: normal;
 }
 </style>
