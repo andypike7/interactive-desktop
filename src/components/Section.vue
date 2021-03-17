@@ -1,22 +1,17 @@
 <template>
   <div class="wrapper">
     <div class="nav">
-      <span class="nav__link">
+      <span>
         <router-link to="/">Home</router-link>
       </span>
-      <span
-        v-for="section in sections"
-        :key="section.name"
-        :class="[
-          'nav__link',
-          { 'nav__link--active': section.to === $route.path },
-        ]"
-      >
+      <span v-for="section in sections" :key="section.name">
         |
-        <router-link :to="section.to">{{ section.name }}</router-link>
+        <router-link :to="section.to" exact-active-class="nav__link--active">{{
+          section.name
+        }}</router-link>
       </span>
     </div>
-    <h1>This is Section #{{ $route.params.id }}</h1>
+    <h1>This is Section #{{ this.sectionId + 1 }}</h1>
     <div
       class="board"
       :style="{
@@ -55,7 +50,11 @@
 import Vue from 'vue';
 import { Component, Watch } from 'vue-property-decorator';
 import { getNavMenu } from '@/utils';
-import { DEFAULT_NUMBER_OF_BLOCKS, CONFIG } from '@/config';
+import {
+  DEFAULT_NUMBER_OF_BLOCKS,
+  DEFAULT_NUMBER_OF_SECTIONS,
+  CONFIG,
+} from '@/config';
 import { Section, Block } from '@/interfaces';
 import { Utils } from '@/utils';
 import BlockComp from '@/components/Block.vue';
@@ -68,13 +67,14 @@ export default class SectionPage extends Vue {
   removedBlocks: Block[] = [];
   activeIndex = 0;
   config = CONFIG;
+  sectionId = 0;
 
   // Actions
 
   addBlock(centered = false): void {
     this.blocks.push({
       id: this.nextId,
-      section: +this.$route.params.id,
+      section: this.sectionId,
       width: CONFIG.DEFAULT_BLOCK_WIDTH,
       height: CONFIG.DEFAULT_BLOCK_HEIGHT,
       x: centered ? Utils.centeredX() : Utils.randomX(),
@@ -144,7 +144,7 @@ export default class SectionPage extends Vue {
     const set = this.blocks.concat(this.removedBlocks);
 
     const max = set.reduce((acc, block) => {
-      if (block.section !== +this.$route.params.id || block.id < acc) {
+      if (block.section !== this.sectionId || block.id < acc) {
         return acc;
       } else {
         return block.id;
@@ -163,29 +163,62 @@ export default class SectionPage extends Vue {
     return getNavMenu();
   }
 
-  // State Management
+  // Hook to State Management
 
   @Watch('$route.params.id')
   updateSection() {
-    const blocks = this.$store.state.blocks[this.$route.params.id];
-    const removedBlocks = this.$store.state.removedBlocks[
-      this.$route.params.id
-    ];
-
-    this.blocks = blocks ? blocks : [];
-    this.removedBlocks = removedBlocks ? removedBlocks : [];
+    this.getState();
   }
 
-  mounted() {
-    this.updateSection();
+  getSectionId(): boolean {
+    const receivedId = this.$route.params.id;
+    const internalId = +(parseInt(receivedId) - 1).toFixed();
+
+    if (
+      internalId < 0 ||
+      internalId >= DEFAULT_NUMBER_OF_SECTIONS ||
+      receivedId !== (internalId + 1).toString()
+    ) {
+      this.$router.replace(`/section/1`);
+      return false;
+    }
+
+    this.sectionId = internalId;
+    console.log(`*** this.sectionId:`, this.sectionId);
+    return true;
   }
 
   @Watch('blocks')
+  onBlocksUpdated() {
+    this.saveState();
+  }
+
+  // Lifecycle
+
+  mounted() {
+    if (this.getSectionId()) {
+      this.getState();
+    }
+  }
+
+  // State Management
+
+  getState() {
+    if (this.getSectionId()) {
+      console.log('*** getState');
+      const blocks = this.$store.state.blocks[this.sectionId];
+      const removedBlocks = this.$store.state.removedBlocks[this.sectionId];
+
+      this.blocks = blocks ? blocks : [];
+      this.removedBlocks = removedBlocks ? removedBlocks : [];
+    }
+  }
+
   saveState() {
     this.$store.commit('updateBlocks', {
       blocks: this.blocks,
       removedBlocks: this.removedBlocks,
-      section: this.$route.params.id,
+      section: this.sectionId,
     });
   }
 }
@@ -207,14 +240,13 @@ export default class SectionPage extends Vue {
     }
   }
 }
-.nav__link--active a {
+.nav__link--active {
   background: #eee;
   cursor: default;
 }
 .board {
-  border: 2px solid black;
-  padding: 10px;
   margin: 0 auto 20px;
+  background: #f4f4f4;
 }
 .actions-panel button {
   font-size: 24px;
