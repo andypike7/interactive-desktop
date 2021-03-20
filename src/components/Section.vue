@@ -184,7 +184,6 @@ export default class SectionPage extends Vue {
     }
 
     this.sectionId = internalId;
-    console.log(`*** this.sectionId:`, this.sectionId);
     return true;
   }
 
@@ -205,12 +204,9 @@ export default class SectionPage extends Vue {
 
   getState() {
     if (this.getSectionId()) {
-      console.log('*** getState');
-      const blocks = this.$store.state.blocks[this.sectionId];
-      const removedBlocks = this.$store.state.removedBlocks[this.sectionId];
-
-      this.blocks = blocks ? blocks : [];
-      this.removedBlocks = removedBlocks ? removedBlocks : [];
+      this.blocks = this.$store.state.blocks[this.sectionId] || [];
+      this.removedBlocks =
+        this.$store.state.removedBlocks[this.sectionId] || [];
     }
   }
 

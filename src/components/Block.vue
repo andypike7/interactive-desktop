@@ -71,6 +71,7 @@ export default class Blockcomp extends Vue {
 
   mounted() {
     this.block = this.initialBlock;
+    console.log('*** SLOTS:', this.$slots);
   }
 }
 </script>
