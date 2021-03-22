@@ -9,6 +9,7 @@
     :minWidth="config.MIN_BLOCK_WIDTH"
     :minHeight="config.MIN_BLOCK_HEIGHT"
     :style="{ background: block.background }"
+    parent
     class="block"
     @activated="activateBlock"
     @dragging="blockDragged"
