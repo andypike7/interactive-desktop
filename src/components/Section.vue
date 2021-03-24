@@ -43,36 +43,6 @@
         Clear
       </button>
     </div>
-    <div
-      class="about"
-      :style="{
-        width: `${config.BOARD_WIDTH}px`,
-      }"
-    >
-      <button @click="isAboutBlock = true" v-if="!isAboutBlock">
-        Do you wanna know what it's for?
-      </button>
-      <div v-else>
-        <h5>The task:</h5>
-        Create SPA, dashboard using <i>vue-router</i>.<br />
-        User can add, remove and drag blocks in every section.<br />
-        Sections should be independent and hold their state against
-        <i>Refresh</i>.<br />
-        <hr />
-        Solution: I've used <i>vue-draggable-resizable</i>.<br />
-        State stored thru <i>Vuex</i> into <i>localStorage</i>.<br />
-        Click on the element should move it up over others.<br />
-        User can restore deleted blocks at any time.<br />
-        Restored blocks should be placed at the center and have 300px width,
-        100px height.
-      </div>
-    </div>
-    <div class="slots">
-      Just playing with slots:<br />
-      <NavLink href="https://google.ru">
-        Google Link (default slot)
-      </NavLink>
-    </div>
   </div>
 </template>
 
@@ -88,10 +58,9 @@ import {
 import { Section, Block } from '@/interfaces';
 import { Utils } from '@/utils';
 import BlockComp from '@/components/Block.vue';
-import NavLink from '@/components/NavLink.vue';
 
 @Component({
-  components: { BlockComp, NavLink },
+  components: { BlockComp },
 })
 export default class SectionPage extends Vue {
   blocks: Block[] = [];
@@ -99,7 +68,6 @@ export default class SectionPage extends Vue {
   activeIndex = 0;
   config = CONFIG;
   sectionId = 0;
-  isAboutBlock = false;
 
   // Actions
 
@@ -301,19 +269,5 @@ export default class SectionPage extends Vue {
     color: yellow;
     background: maroon;
   }
-}
-.about {
-  text-align: left;
-  margin: 20px auto 0;
-  button {
-    display: block;
-    margin: auto;
-  }
-}
-.slots {
-  margin-top: 20px;
-}
-i {
-  color: darkblue;
 }
 </style>
